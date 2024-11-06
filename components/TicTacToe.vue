@@ -1,67 +1,79 @@
 <template>
-    <div>
-      <h2 class="text-center text-xl">Tic Tac Toe</h2>
-      <div id="turn" class="my-4 text-center">X's Turn</div>
-      <table class="mx-auto border-collapse">
-        <tbody>
-          <tr>
-            <td class="game-cell"></td>
-            <td class="game-cell"></td>
-            <td class="game-cell"></td>
-          </tr>
-          <tr>
-            <td class="game-cell"></td>
-            <td class="game-cell"></td>
-            <td class="game-cell"></td>
-          </tr>
-          <tr>
-            <td class="game-cell"></td>
-            <td class="game-cell"></td>
-            <td class="game-cell"></td>
-          </tr>
-        </tbody>
-      </table>
+    <div id="tic-tac-toe">
+      <h2>Tic-Tac-Toe Game</h2>
+      <div class="board">
+        <div
+          v-for="(cell, index) in board"
+          :key="index"
+          class="cell"
+          @click="makeMove(index)"
+        >
+          {{ cell }}
+        </div>
+      </div>
+      <button @click="resetBoard">Reset</button>
     </div>
   </template>
   
-  <script setup>
-  import { ref } from 'vue'
+  <script>
+  import { ref, onMounted } from 'vue';
   
-  const turn = ref('X')
+  export default {
+    setup() {
+      const board = ref(Array(9).fill(null)); // Initial empty board
+      const currentPlayer = ref('X'); // Set initial player to X
   
-  const changeTurn = () => {
-    turn.value = turn.value === 'X' ? 'O' : 'X'
-  }
+      // Function to make a move
+      const makeMove = (index) => {
+        if (!board.value[index]) {
+          board.value[index] = currentPlayer.value;
+          currentPlayer.value = currentPlayer.value === 'X' ? 'O' : 'X';
+        }
+      };
   
-  const handleClick = (event) => {
-    const cell = event.target
-    if (!cell.textContent) {
-      cell.textContent = turn.value
-      changeTurn()
+      // Function to reset the board
+      const resetBoard = () => {
+        board.value = Array(9).fill(null);
+        currentPlayer.value = 'X';
+      };
+  
+      // Using onMounted to access DOM after it's rendered
+      onMounted(() => {
+        console.log('Component is mounted and DOM is ready!');
+        const cells = document.querySelectorAll('.cell');
+        // Now you can safely interact with the cells if needed
+      });
+  
+      return {
+        board,
+        currentPlayer,
+        makeMove,
+        resetBoard
+      };
     }
-  }
-  
-  const cells = ref([])
-  
-  const initGame = () => {
-    const gameCells = document.querySelectorAll('.game-cell')
-    cells.value = Array.from(gameCells)
-    cells.value.forEach((cell) => {
-      cell.addEventListener('click', handleClick)
-    })
-  }
-  
-  initGame()
+  };
   </script>
   
   <style scoped>
-  .game-cell {
-    width: 60px;
-    height: 60px;
-    border: 1px solid black;
+  .board {
+    display: grid;
+    grid-template-columns: repeat(3, 100px);
+    grid-gap: 5px;
+  }
+  .cell {
+    width: 100px;
+    height: 100px;
     text-align: center;
-    font-size: 2rem;
+    font-size: 2em;
+    border: 1px solid #333;
+    display: flex;
+    justify-content: center;
+    align-items: center;
     cursor: pointer;
+  }
+  button {
+    margin-top: 10px;
+    padding: 10px;
   }
   </style>
   
